@@ -55,8 +55,8 @@ param formRecognizerResourceGroupLocation string = location
 param formRecognizerSkuName string = 'S0'
 
 param chatGptDeploymentName string // Set in main.parameters.json
-param chatGptDeploymentCapacity int = 180
-param chatGptModelName string = (openAiHost == 'azure') ? 'gpt-35-turbo-16k' : 'gpt-3.5-turbo-16k'
+param chatGptDeploymentCapacity int = 80
+param chatGptModelName string = (openAiHost == 'azure') ? 'gpt-4-32k' : 'gpt-4-32k'
 param chatGptModelVersion string = '0613'
 param embeddingDeploymentName string = 'embedding'
 param embeddingDeploymentCapacity int = 180

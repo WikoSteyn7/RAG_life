@@ -58,20 +58,20 @@ Step 2:
   - **Format**:
   - For comparative queries: Utilize bullet points if applicable. 
   - For procedural queries: Present the information in a step-by-step format.
-  - Split the answer into a html table with two columns one for {selection[0]} and one for {selection[1]}
   - If information for a policy is not available in the sources, clearly state that you do not have the necessary information.
   - When presenting tabular information, format it as an HTML table, not in markdown.
   - If a source does not include relevant information, do not mention it.
-  - A friendly greeting such as, "Hi, it's Theo here. I have found the following results, let me know if you need anything else," should preface your responses.
+  - A friendly greeting such as, "Hi, it's Theo here. I have found the following results" should preface your responses.
+  - At the end give a statement like "Please contact your policy provider if you need specific information. Let me know if you need anything else."
   - Always answer in the language used by the user in the query.
 - **Details**: Be verbose in your responses, but only give information that is relevant to the user query.  
-- **Consistency**: Ensure that your responses remain consistent for repeated queries.
+- **Consistency**: Ensure that your responses remain consistent for repeated queries in the future.
 - **Sourcing**: 
-  -Each source has a name followed by colon and the actual information, only include the source name at the end of each fact . Use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf] 
+  -Each source has a name followed by colon and the actual information, include the source name at the end of each fact or bulletpoint. Use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf] 
   -Do not mention filenames in any other way.
   -You are not allowed to give a statement without a source and only use the above format for all sourcing. 
 
-Remember, accuracy, clarity, and Consistency are key! Feel free to ask if you have any questions that might help you produce a better answer.
+Remember, accuracy, clarity, and consistency are key. Feel free to ask if you have any questions that might help you produce a better answer.
 """
 
     system_message_chat_conversation = """Always start with a friendly greeting like: Hi, it is Theo here and these are the results I found, let me kmow if you need anything else. 
@@ -81,7 +81,7 @@ Be verbose and don't leave out anything of importance.
 Be deterministic, it is of vital importance to give the same answer in the future if the query is the same.
 Answer ONLY with the facts listed in the list of sources below.  If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
 For tabular information return it as an html table. Do not return markdown format. If the question is not in English, always answer in the language used in the question.
-Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Always use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf] 
+Each source has a name followed by colon and the actual information, always include the source name at the end of evry fact or bulletpoint in the response. Always use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf] 
 You are not allowed to give a statement without a source and only use the above format for any source.
 """
     follow_up_questions_prompt_content = """Generate three very brief follow-up questions that the user would likely ask next about their funeral policy.
@@ -119,7 +119,7 @@ If you cannot generate a search query, return just the number 0.
         self.search_client = search_client
         self.openai_host = openai_host
         self.chatgpt_deployment = chatgpt_deployment
-        self.chatgpt_model = "gpt-3.5-turbo-16k"
+        self.chatgpt_model = "gpt-4-32k"
         self.embedding_deployment = embedding_deployment
         self.embedding_model = embedding_model
         self.sourcepage_field = sourcepage_field
@@ -281,7 +281,7 @@ If you cannot generate a search query, return just the number 0.
             self.chatgpt_model,
             history,
             history[-1]["user"]+ "\n\n" + f"<<< {self.selection[0]} Sources:>>>\n" + contentCapi + f"<<< {self.selection[1]} Sources:>>>\n" + contentSB , # Model does not handle lengthy system messages well. Moving sources to latest user conversation to solve follow up questions prompt.
-            max_tokens=12000)
+            max_tokens=20000)
         msg_to_display = '\n\n'.join([str(message) for message in messagesQA])
         
         ####
@@ -293,7 +293,7 @@ If you cannot generate a search query, return just the number 0.
             model=self.chatgpt_model,
             messages=messagesQA,
             temperature=overrides.get("temperature") or 0.0,
-            max_tokens=4096,
+            max_tokens=8192,
             n=1,
             stream=should_stream)
         
